@@ -1,48 +1,70 @@
-// src/components/TransactionTable.jsx
-import React from "react"
+import React, { useState } from "react";
 import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Button,
-} from "@chakra-ui/react"
+  Table, Thead, Tbody, Tr, Th, Td,
+  Button, useDisclosure
+} from "@chakra-ui/react";
+import EditTransactionModal from "./EditTransactionModal";
 
-function TransactionTable({ transactions, deleteTransaction }) {
+const TransactionTable = ({ transactions, deleteTransaction, editTransaction }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedTx, setSelectedTx] = useState(null);
+
+  const handleEditClick = (tx) => {
+    setSelectedTx(tx);
+    onOpen();
+  };
+
   return (
-    <Table variant="simple" size="sm" mt={6}>
-      <Thead>
-        <Tr>
-          <Th>Date</Th>
-          <Th>Description</Th>
-          <Th isNumeric>Amount</Th>
-          <Th>Category</Th>
-          <Th>Actions</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {transactions.map((txn, index) => (
-          <Tr key={index}>
-            <Td>{txn.date}</Td>
-            <Td>{txn.description}</Td>
-            <Td isNumeric>{txn.amount}</Td>
-            <Td>{txn.category}</Td>
-            <Td>
-              <Button
-                size="xs"
-                colorScheme="red"
-                onClick={() => deleteTransaction(index)}
-              >
-                Delete
-              </Button>
-            </Td>
+    <>
+      <Table variant="simple" mt={4}>
+        <Thead>
+          <Tr>
+            <Th>Description</Th>
+            <Th>Amount</Th>
+            <Th>Category</Th>
+            <Th>Type</Th>
+            <Th>Actions</Th>
           </Tr>
-        ))}
-      </Tbody>
-    </Table>
-  )
-}
+        </Thead>
+        <Tbody>
+          {transactions.map((tx) => (
+            <Tr key={tx.id}>
+              <Td>{tx.description}</Td>
+              <Td>₹{tx.amount}</Td>
+              <Td>{tx.category}</Td>
+              <Td>{tx.type}</Td>
+              <Td>
+                <Button
+                  size="sm"
+                  colorScheme="blue"
+                  mr={2}
+                  onClick={() => handleEditClick(tx)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme="red"
+                  onClick={() => deleteTransaction(tx.id)}
+                >
+                  Delete
+                </Button>
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
 
-export default TransactionTable
+      {selectedTx && (
+        <EditTransactionModal
+          isOpen={isOpen}
+          onClose={onClose}
+          transaction={selectedTx}
+          editTransaction={editTransaction}
+        />
+      )}
+    </>
+  );
+};
+
+export default TransactionTable;

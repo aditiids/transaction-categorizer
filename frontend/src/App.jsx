@@ -38,6 +38,14 @@ function App() {
     setTransactions((prev) => prev.filter((_, i) => i !== index))
   }
 
+  const editTransaction = (updatedTx) => {
+  setTransactions(
+    transactions.map((tx) =>
+      tx.id === updatedTx.id ? { ...updatedTx } : tx
+    )
+  );
+};
+
   return (
     <Box>
       <Navbar />
@@ -52,6 +60,7 @@ function App() {
                 <TransactionTable
                   transactions={transactions}
                   deleteTransaction={deleteTransaction}
+                  editTransaction={editTransaction}
                 />
               </Box>
             }
